@@ -1,0 +1,20 @@
+Computational inefficiencies and anti-patterns: 
+1. Repeated getPriority Function Calls:
+The getPriority function is called multiple times for the same blockchain value in different places: inside the filter and sort functions. This leads to unnecessary recalculations of the same value.
+Improvement: Store the result of getPriority in a variable and reuse it in both filtering and sorting operations.
+
+2. Sorting in useMemo with Changing Dependencies: 
+Sorting the balances within useMemo and depending on both balances and prices can cause unnecessary recomputation. If prices doesn’t impact sorting, then it should not be included in the dependencies for useMemo.
+Improvement: Remove prices from useMemo dependencies if it is not required for sorting.
+	
+3. Unnecessary Mapping to formattedBalances:
+formattedBalances is created with the same set of sortedBalances but with a formatted property added. However, this can be done within the final rendering loop, reducing one extra iteration over the data.
+Improvement: Move the formatting directly inside the map loop for rows and avoid creating a separate formattedBalances array.
+	
+4. Inefficient Rendering with key as index:
+Using the array index as the key in React can lead to inefficient rendering, especially if the array is modified, because React will not be able to properly track the components’ state between renders.
+Improvement: Use a unique identifier (e.g., balance.currency or another property) as the key to ensure proper reconciliation.
+	
+5. Unnecessary Nested Mapping (sortedBalances.map and rows.map):
+You are doing two separate .map() operations on sortedBalances. The first one creates formattedBalances, and the second creates rows. You can combine both mapping steps into one to reduce the number of iterations.
+Improvement: Combine the map operations into one for efficiency.
